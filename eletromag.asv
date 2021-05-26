@@ -4,31 +4,52 @@ ant2 = spiralArchimedean('NumArms', 1, 'Turns', 1, 'Tilt', 90, 'Turns', 6, 'Inne
 %show(ant2);
 
 % Impedância
-freq = linspace(10e5,10e6,200);
-impedance(ant1, freq);
+freq = linspace(10e5,10e6,	18);
+%impedance(ant1, freq);
 
 Z = impedance(ant1, freq);
-plot(freq, imag(Z));
+%plot(freq, imag(Z));
 
 % Acoplamentos
 la = linearArray;
 la.NumElements = 2;
-la.ElementSpacing = 0.4;
+la.ElementSpacing = .4;
 la.Element = ant1;
+
+% Ganhos
+%sd = sparameters(la, freq);
+%rfplot(sd, 2, 1, 'abs');
+
+% Segundo elemento
 la.Element = ant2;
-%show(la);
 
 % Ganhos
 sd = sparameters(la, freq);
-%rfplot(sd ,2, 1, 'abs');
-%rfparam(sd,2,1)
+%disp(rfparam(sd, 2, 1));
+[freq_res, index_res] = max(abs(rfparam(sd, 2, 1)));
+
+disp(freq_res);
+disp(index_res);
+rfplot(sd, 2, 1, 'abs');
+%show(la);
 
 % Variando as distâncias
-dist = linspace(5*1e-3, 5*1e-2);
+dist = linspace(5*1e-3, 5*1e-2, 18);
 
-for i = 1:dist
-    %plot...
-    % Me fala a frequência, me fala a distância, eu te falo o M
-    % Trocar jwL1 pela imp total
-    % Achar as correntes, achando as correntes acha o ganho
-end
+%rfplot(sd, 2, 1, 'abs')
+Z_ganho = zeros(18);
+
+% for i = 1:18
+%     disp(i);
+%     la.ElementSpacing = dist(i);
+%     sd = sparameters(la, freq);
+%     Z_ganho(:, i) =  abs(rfparam(sd, 2, 1));
+% end
+% [X, Y] = meshgrid(freq, dist);
+% surf(X, Y, Z_ganho);
+
+%disp(index_res(0));
+%current(ant1, 6.29412);
+%plot(current, freq);
+
+
