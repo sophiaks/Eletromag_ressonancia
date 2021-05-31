@@ -54,13 +54,13 @@ rfplot(sd, 2, 1, 'abs');
 
 %%
 % PLOT 3D
-[X, Y] = meshgrid(freq, dist);
-surf(X, Y, Z_ganho);
+%[X, Y] = meshgrid(freq, dist);
+%surf(X, Y, Z_ganho);
 
 %% 
 % Freq crítica e sigma
 w_c = freq(index_crit);
-sigma = 18.5; %ajustável
+sigma = 20; %ajustável
 % L e C
 L = sigma/w_c;
 C = 1/(sigma*w_c);
@@ -69,17 +69,17 @@ Z_array_ant = zeros(1, 30);
 for w = 1:length(freq)
     Z_ind = 1j*freq(w)*L;
     Z_cap = 1/(1j*freq(w)*C);
-    Z_ant = ((Z_ind*Z_cap)/(Z_ind + Z_cap)) + 4*Z_ind;
+    Z_ant = ((Z_ind*Z_cap)/(Z_ind + Z_cap)) + 1.326*Z_ind; %ajustável
     Z_array_ant(w) = Z_ant;
 end
 
 %%
 % PLOT IMPEDANCIA DE TRANSFORMADORES
 plot(freq, imag(Z_array_ant));
+ylim([-100, 100])
 yline(0);
 intersection = find(imag(Z_array_ant)==0, 2);
 disp(intersection);
 hold on
 plot(freq, imag(Z));
-
 %%
