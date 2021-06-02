@@ -6,9 +6,10 @@ ant2 = spiralArchimedean('NumArms', 1, 'Tilt', 90, 'Turns', 5, 'InnerRadius', .4
 show(ant1);
 show(ant2);
 
+
 %%
 % Impedância
-freq = linspace(1000000,10000000, 30);
+freq = linspace(1000000,10000000, 10);
 Z = impedance(ant1, freq);
 
 %%
@@ -21,7 +22,6 @@ impedance(ant1, freq);
 % Acoplamentos
 la = linearArray;
 la.NumElements = 2;
-la.ElementSpacing = .4;
 la.Element = ant1;
 
 %%
@@ -31,7 +31,7 @@ rfplot(sd, 2, 1, 'abs');
 
 %%
 % Segundo elemento
-la_2  = linearArray('Element', [ant1, ant2]);
+%la_2  = linearArray('Element', [ant1, ant2], 'ElementSpacing', 0.4);
 
 %%
 % Ganhos (ambas as antenas)
@@ -46,21 +46,23 @@ rfplot(sd, 2, 1, 'abs');
 
 %%
 % Variando as distâncias
-dist = linspace(5*1e-3, 5*1e-2, 30);
-Z_ganho = zeros(30);
-list_ganhozitos = zeros(length(dist), 1);
+dist = linspace(5*1e-3, 5*1e-2, 10);
+Z_ganho = zeros(10, 10);
 
-
-for i = 1:length(dist)
-    la_2.ElementSpacing = dist(i);
+for i = 1:10
+    disp(i);
+    %la_2.ElementSpacing = dist(1, i);
+    la_2  = linearArray('Element', [ant1, ant2], 'ElementSpacing', dist(1, i));
     ganhoS = sparameters(la_2, freq);
-    Z_ganho(i ,:) =  rfparam(ganhoS, 2, 1);
+    Z_ganho(i ,:) =  abs(rfparam(ganhoS, 2, 1));
 end
 %MEU AMIGO
 %%
 % PLOT 3D
-[X, Y] = meshgrid(freq, dist);
-surf(X, Y, abs(Z_ganho));
+%[X, Y] = meshgrid(dist, freq);
+%surf(X, Y, abs(Z_ganho));
+
+mesh(freq, dist, Z_ganho);
 
 xlabel('Distância');
 ylabel('Frequência');
@@ -68,7 +70,7 @@ zlabel('Ganho');
 
 %%
 % Corrente ressonante
-current(la, freq(index_res));
+current(la_2, freq(index_res));
 %% 
 % Freq crítica e sigma
 w_c = freq(index_crit);
