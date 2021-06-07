@@ -1,77 +1,56 @@
+
+%% 1
+% PLOTS ANTENAS
 ant1 = spiralArchimedean('NumArms', 1, 'Tilt', 90, 'Turns', 5, 'InnerRadius', .45, 'OuterRadius', .5, 'TiltAxis', 'Y');
 ant2 = spiralArchimedean('NumArms', 1, 'Tilt', 90, 'Turns', 5, 'InnerRadius', .45, 'OuterRadius', .5, 'TiltAxis', 'Y');
 
-%%
-% PLOTS ANTENAS
+figure(1);
 show(ant1);
+
+%% 2
+% Impedância
+freq = linspace(1000000,10000000, 100);
+figure(2);
+Z = impedance(ant1, freq);
+%% 3
+figure(3);
 show(ant2);
 
-
-%%
-% Impedância
-freq = linspace(1000000,10000000, 10);
-Z = impedance(ant1, freq);
-
-%%
-%PLOTS impedância
-%plot(freq, imag(Z));
-impedance(ant1, freq);
-%impedance(ant2, freq);
-
-%%
 % Acoplamentos
-la = linearArray;
-la.NumElements = 2;
-la.Element = ant1;
-
-%%
-% Ganhos (apenas antena 1)
+la = linearArray('Element',[ant1, ant2],'ElementSpacing',0.4);
+figure(4);
+show(la);
+%% 4 e 5
+% Ganhos
 sd = sparameters(la, freq);
+figure(5);
 rfplot(sd, 2, 1, 'abs');
 
-%%
-% Segundo elemento
-%la_2  = linearArray('Element', [ant1, ant2], 'ElementSpacing', 0.4);
-
-%%
-% Ganhos (ambas as antenas)
-sd = sparameters(la, freq);
-[freq_crit, index_crit] = max(abs(imag(Z)));
-[freq_res, index_res] = max(abs(rfparam(sd, 2, 1)));
-disp(freq(index_crit))
-
-%%
-% PLOTS
-rfplot(sd, 2, 1, 'abs');
-
-%%
+%% 6
 % Variando as distâncias
-dist = linspace(5*1e-3, 5*1e-2, 10);
-Z_ganho = zeros(10, 10);
+dist = linspace(0.1,1,100);
+Z_ganho = zeros(100,100);
 
-for i = 1:10
-    disp(i);
-    %la_2.ElementSpacing = dist(1, i);
-    la_2  = linearArray('Element', [ant1, ant2], 'ElementSpacing', dist(1, i));
-    ganhoS = sparameters(la_2, freq);
-    Z_ganho(i ,:) =  abs(rfparam(ganhoS, 2, 1));
+for i = 1:1:1
+    la.ElementSpacing = dist(1,i);
+    ganhos = sparameters(la, freq);
+    Z_ganho(i ,:) =  abs(rfparam(ganhos, 2, 1));
 end
-%MEU AMIGO
-%%
-% PLOT 3D
-%[X, Y] = meshgrid(dist, freq);
-%surf(X, Y, abs(Z_ganho));
-
+figure(6);
 mesh(freq, dist, Z_ganho);
 
-xlabel('Distância');
-ylabel('Frequência');
+title('3d');
+xlabel('Frequência');
+ylabel('Distância');
 zlabel('Ganho');
+%% 7
 
-%%
-% Corrente ressonante
-current(la_2, freq(index_res));
-%% 
+[freq_crit, index_crit] = max(abs(imag(Z)));
+[freq_res, index_res] = max(abs(rfparam(sd, 2, 1)));
+
+current(la, freq(index_res));
+%% 8 a
+
 % Freq crítica e sigma
 w_c = freq(index_crit);
 sigma = 20; %ajustável
@@ -87,13 +66,38 @@ for w = 1:length(freq)
     Z_array_ant(w) = Z_ant;
 end
 
-%%
-% PLOT IMPEDANCIA DE TRANSFORMADORES
+figure(7);
 plot(freq, imag(Z_array_ant));
 ylim([-100, 100])
 yline(0);
 intersection = find(imag(Z_array_ant)==0, 2);
-disp(intersection);
 hold on
 plot(freq, imag(Z));
-%%
+hold off
+
+%% 8 b
+
+dist = linspace(0.1,1,100);
+ganho = zeros(100,1);
+M = linspace((1/freq_crit),0.1*1e-7,100);
+for w = 1:length(M)
+    ganho(w) = (abs(M(w) * freq_crit * 1j) ^2);  
+end
+
+figure(8);
+plot(M,ganho);
+xlabel('M');
+ylabel('ganho');
+grid
+
+figure(9);
+plot(dist,ganho);
+xlabel('dist');
+ylabel('ganho');
+grid
+
+figure(10);
+plot(dist,M);
+xlabel('dist');
+ylabel('M');
+grid
