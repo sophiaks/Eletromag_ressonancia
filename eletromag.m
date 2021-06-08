@@ -97,9 +97,3 @@ plot(dist,ganho);
 xlabel('Distância (m)');
 ylabel('Ganho');
 grid
-
-figure(10);
-plot(dist,M);
-xlabel('dist');
-ylabel('M');
-grid
