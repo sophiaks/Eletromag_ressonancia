@@ -31,7 +31,7 @@ rfplot(sd, 2, 1, 'abs');
 dist = linspace(0.1,1,100);
 Z_ganho = zeros(100,100);
 
-for i = 1:1:1
+for i = 1:1:100
     la.ElementSpacing = dist(1,i);
     ganhos = sparameters(la, freq);
     Z_ganho(i ,:) =  abs(rfparam(ganhos, 2, 1));
