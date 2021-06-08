@@ -52,7 +52,8 @@ current(la, freq(index_res));
 %% 8 a
 
 % Freq crítica e sigma
-w_c = freq(index_crit);
+freq_crit = freq(index_crit);
+w_c = freq_crit*2*pi;
 sigma = 20; %ajustável
 % L e C
 L = sigma/w_c;
@@ -60,8 +61,8 @@ C = 1/(sigma*w_c);
 
 Z_array_ant = zeros(1, 30);
 for w = 1:length(freq)
-    Z_ind = 1j*freq(w)*L;
-    Z_cap = 1/(1j*freq(w)*C);
+    Z_ind = 1j*freq(w)*2*pi*L;
+    Z_cap = 1/(1j*freq(w)*2*pi*C);
     Z_ant = ((Z_ind*Z_cap)/(Z_ind + Z_cap)) + 1.326*Z_ind; %ajustável
     Z_array_ant(w) = Z_ant;
 end
@@ -73,6 +74,7 @@ yline(0);
 intersection = find(imag(Z_array_ant)==0, 2);
 hold on
 plot(freq, imag(Z));
+grid
 hold off
 
 %% 8 b
@@ -86,14 +88,14 @@ end
 
 figure(8);
 plot(M,ganho);
-xlabel('M');
-ylabel('ganho');
+xlabel('M (H)');
+ylabel('Ganho');
 grid
 
 figure(9);
 plot(dist,ganho);
-xlabel('dist');
-ylabel('ganho');
+xlabel('Distância (m)');
+ylabel('Ganho');
 grid
 
 figure(10);
